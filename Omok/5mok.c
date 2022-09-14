@@ -44,6 +44,7 @@ int main() {
 	}
 	DrawBoard();
 	WhoWin();
+	_getch();
 }
 
 void MouseClick() {	
@@ -63,7 +64,7 @@ void MouseClick() {
 				if (Board[temp_y - 1][temp_x / 2 - 1] == 1 || Board[temp_y - 1][temp_x / 2 - 1] == 2)
 					continue;
 					// 중복설치 불가
-				if (temp_x / 2 <= 15 && temp_x >= 2 && temp_y <= 15 && temp_y >= 1) {
+				if (temp_x / 2 <= Board_X- Board_void && temp_x / 2 - 1 >= Board_void && temp_y <= Board_Y- Board_void && temp_y - 1 >= Board_void) {
 					// 바둑판 안에만 설치할 수 있도록.					
 					cursor.x = temp_x / 2;
 					cursor.y = temp_y;
@@ -106,7 +107,7 @@ void SwapColor() {
 }
 
 void WhoWin() {	
-	gotoxy(18, 0);
+	gotoxy(Board_X+2, Board_Y/2);
 	switch (stone_color) {
 	case 1:
 		puts("흰돌 승!");
@@ -114,8 +115,7 @@ void WhoWin() {
 	case 2:
 		puts("검은돌 승!");
 		break;
-	}
-	gotoxy(0, 20);
+	}	
 }
 
 void GameOver() {
@@ -230,22 +230,24 @@ void CheckLeftUpCross(int check_x, int check_y) {
 			if (Board[check_y + 2][check_x + 2] == stone_color) {
 				if (Board[check_y + 3][check_x + 3] == stone_color) {
 					if (Board[check_y + 4][check_x + 4] == stone_color) {
-						GameOver();
+						GameOver();	 // 문제 발생!	Board[14][14] 중 Board[15][16]	(없는 공간인데 같은 걸로 인식함)	[11 + 4][12 + 4]
+										 // 근데 다른곳은 잘됨;
+										 // 따라서 보드의 4방향에 4칸씩 더 추가하여 빈공간을 부여한다.
 					}
 					else if (Board[check_y - 1][check_x - 1] == stone_color) {
-						GameOver();
+						GameOver();							
 					}
 				}
 				else if (Board[check_y - 1][check_x - 1] == stone_color) {
 					if (Board[check_y - 2][check_x - 2] == stone_color) {
-						GameOver();
+						GameOver();							
 					}
 				}
 			}
 			else if (Board[check_y - 1][check_x - 1] == stone_color) {
 				if (Board[check_y - 2][check_x - 2] == stone_color) {
 					if (Board[check_y - 3][check_x - 3] == stone_color) {
-						GameOver();
+						GameOver();						
 					}
 				}
 			}
@@ -254,7 +256,7 @@ void CheckLeftUpCross(int check_x, int check_y) {
 			if (Board[check_y - 2][check_x - 2] == stone_color) {
 				if (Board[check_y - 3][check_x - 3] == stone_color) {
 					if (Board[check_y - 4][check_x - 4] == stone_color) {
-						GameOver();
+						GameOver();							
 					}
 				}
 			}
@@ -308,7 +310,7 @@ void RemoveConsole() {
 }
 
 void Manual() {
-	gotoxy(1, 18);
+	gotoxy(1, Board_Y + 2);
 	printf("현재 돌 : ");
 	switch (stone_color) {
 	case 1:
@@ -368,6 +370,8 @@ void DrawBoard() {
 			case 44:
 				gotoxy(x + 1, y + 1);
 				puts("├");
+				break;
+			default:
 				break;
 			}
 		}
